@@ -17,6 +17,7 @@ void setup() {
 void draw() {
   
   switch(state) {
+  
     case MAIN_MENU:
       background(225);
       textSize(50);
