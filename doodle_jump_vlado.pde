@@ -10,9 +10,7 @@ void setup() {
   
   p = new Player(135, 475, 0, 0, 50);
   platforms = new ArrayList<Platform>();
-  
-  Platform starter_platform = new Platform(100, 700);
-  platforms.add(starter_platform); 
+  reset(); //funkcija služi da resetira sve varijable nakon što igrač padne
 }
 
 
@@ -46,6 +44,9 @@ void draw() {
       }
   
       add_remove_platforms();
+      if (p.y > 800+25){
+      reset();
+        state=0;}
       break;
   }
 }
@@ -59,4 +60,15 @@ void add_remove_platforms() {
     Platform new_platform = new Platform( random(425), 700-(145*platforms.size()));
     platforms.add(new_platform);
   }
+}
+void reset(){
+  for (int i = platforms.size() - 1; i >= 0; i--) {
+    platforms.remove(i);
+  }
+  Platform starter_platform = new Platform(100, 700);
+  platforms.add(starter_platform);
+  p.x=135;
+  p.y=475;
+  p.x_velocity=0;
+  p.y_velocity=0;
 }
