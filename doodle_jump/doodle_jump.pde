@@ -2,10 +2,12 @@ import java.util.ArrayList;
 int state=0;
 final int MAIN_MENU=0;
 final int GAME=1;
-int score = -5;
+
 Player p;
+Platform zadnja;
+Broken_Platform prva_slomljena;
 ArrayList<Platform> platforms;
-ArrayList<PImage> slikaplatniz;
+ArrayList<Broken_Platform> broken_platforms;
 ArrayList<PImage> moodlers;
 //razmak izmedu linija u pozadinskoj mrezi
 MyFloat first_horiz_line;
@@ -17,19 +19,11 @@ void setup() {
   first_horiz_line = new MyFloat();
   line_dist = 25;
   
-  p = new Player(135, 475, 0, 0, 50, 0);
+  p = new Player(135, 475, 0, 0, 100, 0);
   platforms = new ArrayList<Platform>();
   reset(); //funkcija služi da resetira sve varijable nakon što igrač padne
   
-  slikaplatniz= new ArrayList<PImage>();
-  moodlers= new ArrayList<PImage>();
-  
-  slikaplatniz.add(loadImage("platforma_obicna.png"));
-  slikaplatniz.add(loadImage("platforma_nestajuca.png"));
-  slikaplatniz.add(loadImage("platforma_pomicna.png"));
-  slikaplatniz.add(loadImage("platforma_slomljena2.png"));
-  slikaplatniz.add(loadImage("platforma_slomljena4.png"));
-  
+  moodlers= new ArrayList<PImage>(); 
   moodlers.add(loadImage("moodler_D.png"));
   moodlers.add(loadImage("moodler_L.png"));
   moodlers.add(loadImage("moodler_kapa_D.png"));
@@ -55,7 +49,7 @@ void draw_background() {
 }
 
 void draw() {
-  
+
   switch(state) {
   
     case MAIN_MENU:
@@ -78,15 +72,25 @@ void draw() {
   
       frameRate(40);
       background(225);
-      text("Score: "+str(score), 20, 40);
-      p.update(platforms, first_horiz_line); 
+      text("Score: "+str(p.score), 20, 40);
+      //update svih platformi
+      for ( Platform platform : platforms ) {       
+        platform.update();
+      }
+      //update playera
+      p.update(platforms, broken_platforms, first_horiz_line); 
       
       draw_background();
   
       //prvo se crtaju platforme pa player da bi player bio 'ispred' njih
-      for (int i=0; i<platforms.size(); i++) {
-        platforms.get(i).display();
+      for ( Platform platform : platforms ) {       
+        platform.display();
       }
+      //crtanje slomljenih platformi
+      for ( Broken_Platform broken_platform : broken_platforms ) {       
+        broken_platform.display();
+      }
+      //crtanje playera
       p.display();  
   
       add_remove_platforms();
@@ -98,30 +102,76 @@ void draw() {
 }
 
 void add_remove_platforms() {
+  
+  //brise platforme ako su 'izletile' iz prozora
   for (int i=0; i<platforms.size(); i++) {
     if (platforms.get(i).y_pos >= height) platforms.remove(i);
   }
-  
-  while (platforms.size() < 6) {
-    Platform new_platform = new Platform( random(425), 700-(145*platforms.size()), 0);
-    platforms.add(new_platform);
-    score++;
-    
-    //new_platform = new Platform( random(425), random(700), 3);
-    //platforms.add(new_platform);
+  //brise slomljene platforme
+  for (int i=0; i<broken_platforms.size(); i++) {
+    if (broken_platforms.get(i).y_pos >= height) broken_platforms.remove(i);
   }
+
+  //broj platformi ovisi o visini na kojoj se igrac nalazi, tj score-u
+  //najvise ih je 16(na pocetku), a najmanje 6
+  int broj_pl = ( 16 - p.score/250 > 5 ) ? ( 16 - p.score/250 ) : 6; 
+  
+  //vjerojatnost da platforma bude obicna
+  //vjerojatnost je obrnuto proporcionalna score-u
+  float P_obicna = ( p.score/3000 < 1 ) ? ( 1 - (Float.valueOf(p.score)/3000 ) ): 0;
+  //System.out.println( P_obicna );
+  
+  //vjerojatnost da platforma bude pomicna
+  //vjerojatnost da platforma bude nestajuća je tada ( 1 - P_obicna - P_pomicna )
+  float P_pomicna = ( p.score/6000 < 1 ) ? ( P_obicna - (Float.valueOf(p.score)/6000 ) ) : 0;
+  
+  //prvo crtamo platforme koje se slamaju
+  //njihov broj je konstantan = 3
+  while( broken_platforms.size() < 3 ){
+    Broken_Platform new_broken = new Broken_Platform( random( 425 ), -300  * broken_platforms.size() );
+    broken_platforms.add( new_broken );
+  }
+  
+  //sada crtamo ostale platforme
+  int razmak = 800/( broj_pl - 1 );
+  Platform new_platform;
+  
+  while ( platforms.size() < broj_pl ) {
+    //ovisno o vrijednosti rnd nova platforma je pomicna ili obicna
+    float rnd = random( 0, 1 );
+    if ( rnd <= P_obicna ){
+      new_platform = new Regular_Platform( random(425), zadnja.get_y() - razmak);
+    }
+    else if ( rnd <= P_obicna + P_pomicna ){
+      new_platform = new Moving_Platform( random(425), zadnja.get_y() - razmak);
+    } 
+    else {
+      new_platform = new Disappearing_Platform( random(425), zadnja.get_y() - razmak);
+    }  
+    
+    platforms.add(new_platform);
+    zadnja = new_platform;
+  }  
+  
 }
+
+//funkcija služi da resetira sve varijable nakon što igrač padne
 void reset(){
   for (int i = platforms.size() - 1; i >= 0; i--) {
     platforms.remove(i);
   }
-  Platform starter_platform = new Platform(100, 700, 0);
-  platforms.add(starter_platform);
-  p.x=135;
+  //pocetna platforma
+  zadnja = new Regular_Platform(100, 700);
+  platforms.add(zadnja);
+  
+  //inicijalizacija liste slomljenih platformi(prazna lista)
+  broken_platforms = new ArrayList<Broken_Platform>();
+  
+  p.x=80;
   p.y=475;
   p.x_velocity=0;
   p.y_velocity=0;
-  score=-5;
+  p.score = 0;
   
   first_horiz_line.value = 0;
 }
