@@ -2,18 +2,34 @@ abstract class Platform {
   
   protected float x_pos, y_pos;
   protected float p_length;
-  protected PImage slikapl;
+  protected PImage slikapl, power;
+  protected String superpower;
       
   
-  public Platform( float x, float y ) {
+  public Platform( float x, float y, String spower ) {
     x_pos = x;
     y_pos = y;
     
-    p_length = 75;   
+    p_length = 75;  
+    
+    superpower = spower;
+      
+    if ( superpower.equals( "" ) == false ){
+      String string_slika = superpower + ".png";
+      power = loadImage( string_slika );
+      power.resize( (int)( power.width/2.25 ), (int)( power.height/2.25 ) );
+    }
+    
   }
   
-  public void display() {   
-    image(slikapl, x_pos, y_pos, p_length, p_length*slikapl.height/slikapl.width);
+  public void display() {  
+    
+    //ako na platformi postoji supermoc
+    if ( superpower.equals( "" ) == false ) {     
+      image( power, x_pos, y_pos - power.height );
+    }
+      
+    image(slikapl, x_pos, y_pos, p_length, p_length*slikapl.height/slikapl.width );
   }
   
   public void destroy() {
@@ -25,14 +41,17 @@ abstract class Platform {
   public float get_y() {
     return y_pos;
   }
+  public String get_power(){
+    return superpower;
+  }
   
   abstract void update();
 }
 
 class Regular_Platform extends Platform {
   
-  public Regular_Platform( float x, float y ){
-    super( x, y );
+  public Regular_Platform( float x, float y, String spower ){
+    super( x, y, spower );
     slikapl = loadImage( "platforma_obicna.png" );
   }  
   public void update() {   
@@ -43,8 +62,8 @@ class Moving_Platform extends Platform {
   
   private float x_velocity;
   
-  public Moving_Platform( float x, float y ){
-    super( x, y );
+  public Moving_Platform( float x, float y, String spower ){
+    super( x, y, spower );
     slikapl = loadImage( "platforma_pomicna.png" );
     x_velocity = 2;
   }  
@@ -60,8 +79,8 @@ class Moving_Platform extends Platform {
 
 class Disappearing_Platform extends Platform {
   
-  public Disappearing_Platform( float x, float y ){
-    super( x, y );
+  public Disappearing_Platform( float x, float y, String spower ){
+    super( x, y, spower );
     slikapl = loadImage( "platforma_nestajuca.png" );
   } 
   public void update(){
@@ -70,22 +89,43 @@ class Disappearing_Platform extends Platform {
 
 class Broken_Platform extends Platform {
   
-  private PImage slikapl2;
+  private PImage slikapl0, slikapl1, slikapl2, slikapl3, slikapl4, slikapl5;
   private boolean broken;
   
   public Broken_Platform( float x, float y ){
-    super( x, y );
+    super( x, y, "" );
     
     broken = false;
-    slikapl = loadImage( "platforma_slomljena1.png" );
+
+    slikapl0 = loadImage( "platforma_slomljena1.png" );
+    slikapl1 = loadImage( "platforma_slomljena2.png" );
     slikapl2 = loadImage( "platforma_slomljena4.png" );
+    slikapl3 = loadImage( "platforma_slomljena3.png" );
+    slikapl4 = loadImage( "platforma_slomljena4.png" );
+    slikapl5 = loadImage( "platforma_slomljena5.png" );
+    
+    slikapl = slikapl0;
   } 
   
   public void display(){
-    if ( broken ){
+    
+    if ( slikapl == slikapl1 ){
       slikapl = slikapl2;
+    }        
+    else if ( slikapl == slikapl2 ){
+      slikapl = slikapl3;
+    }
+    else if ( slikapl == slikapl3 ){
+      slikapl = slikapl4;
+    }
+    else if ( slikapl == slikapl4 ){
+      slikapl = slikapl5;
+    }
+    else if ( broken &&  ( slikapl == slikapl0 ) ){
+      slikapl = slikapl1;
     }
     image(slikapl, x_pos, y_pos, p_length, p_length*slikapl.height/slikapl.width);
+    
   }
   public void update(){
   }

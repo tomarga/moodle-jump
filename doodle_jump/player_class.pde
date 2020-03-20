@@ -1,9 +1,8 @@
   class Player {
-    private float x, y, x_velocity, y_velocity, gravity=2, size;
-    private float climb = 0;
+    private float x, y, x_velocity, y_velocity, gravity, size;
+    private float climb;
     private int tip;
     public int score;
-  
   
     //konstruktor
     // p = Player(135, 475, 0, 0, 2, 10);
@@ -15,6 +14,9 @@
       this.size = size;
       this.tip = t;
       this.score = 0;
+      this.climb = 0;
+      this.gravity = 2;
+      
     }
   
     public void update( ArrayList<Platform> platforms, ArrayList<Broken_Platform> broken_platforms, MyFloat first_horiz_line ) {

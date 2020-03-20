@@ -135,18 +135,43 @@ void add_remove_platforms() {
   //sada crtamo ostale platforme
   int razmak = 800/( broj_pl - 1 );
   Platform new_platform;
+  //vjerojatnost da se supermoći nalaze na platformi
+  double P_federi = (double)3/400;
+  //System.out.println( P_federi );
+  double P_stit = (double)2/400;
+  //System.out.println( P_stit );
+  double P_propela = (double)1/400;
+  //System.out.println( P_propela );
   
   while ( platforms.size() < broj_pl ) {
-    //ovisno o vrijednosti rnd nova platforma je pomicna ili obicna
+    
+    String superpower = "";
+    
+    //o vrijednosti rnd ovisi koja vrsta platforme ce se stvoriti, te
+    //hoce li i koja supermoc biti na toj platformi
     float rnd = random( 0, 1 );
+
+    if ( rnd <= P_propela ) {
+      //System.out.println( "propela" );
+      superpower = "propela";
+    }
+    else if ( rnd <= P_propela + P_stit ) {
+      //System.out.println( "stit" );
+      superpower = "stit";
+    }
+    else if ( rnd <= P_propela + P_stit + P_federi ) {
+      //System.out.println( "federi" );
+      superpower = "federi";
+    }
+     
     if ( rnd <= P_obicna ){
-      new_platform = new Regular_Platform( random(425), zadnja.get_y() - razmak);
+      new_platform = new Regular_Platform( random(425), zadnja.get_y() - razmak, superpower);
     }
     else if ( rnd <= P_obicna + P_pomicna ){
-      new_platform = new Moving_Platform( random(425), zadnja.get_y() - razmak);
+      new_platform = new Moving_Platform( random(425), zadnja.get_y() - razmak, superpower);
     } 
     else {
-      new_platform = new Disappearing_Platform( random(425), zadnja.get_y() - razmak);
+      new_platform = new Disappearing_Platform( random(425), zadnja.get_y() - razmak, superpower);
     }  
     
     platforms.add(new_platform);
@@ -161,7 +186,7 @@ void reset(){
     platforms.remove(i);
   }
   //pocetna platforma
-  zadnja = new Regular_Platform(100, 700);
+  zadnja = new Regular_Platform(100, 700, "");
   platforms.add(zadnja);
   
   //inicijalizacija liste slomljenih platformi(prazna lista)
