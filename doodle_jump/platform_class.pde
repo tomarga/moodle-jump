@@ -124,6 +124,9 @@ class Broken_Platform extends Platform {
     else if ( broken &&  ( slikapl == slikapl0 ) ){
       slikapl = slikapl1;
     }
+    else if ( slikapl == slikapl5 ){
+      this.y_pos += 5;
+    }
     image(slikapl, x_pos, y_pos, p_length, p_length*slikapl.height/slikapl.width);
     
   }
