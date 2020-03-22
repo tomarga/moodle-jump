@@ -3,6 +3,8 @@ int state=0;
 final int MAIN_MENU=0;
 final int GAME=1;
 
+homework HW;
+
 Player p;
 Platform zadnja;
 Broken_Platform prva_slomljena;
@@ -19,15 +21,24 @@ void setup() {
   first_horiz_line = new MyFloat();
   line_dist = 25;
   
-  p = new Player(135, 475, 0, 0, 100, 0);
+  p = new Player(135, 475, 0, 0, 100);
   platforms = new ArrayList<Platform>();
+  HW= new homework(150,100);
   reset(); //funkcija služi da resetira sve varijable nakon što igrač padne
   
   moodlers= new ArrayList<PImage>(); 
-  moodlers.add(loadImage("moodler_D.png"));
-  moodlers.add(loadImage("moodler_L.png"));
-  moodlers.add(loadImage("moodler_kapa_D.png"));
-  moodlers.add(loadImage("moodler_kapa_L.png"));
+  moodlers.add(loadImage("moodler_D.png"));//0
+  moodlers.add(loadImage("moodler_L.png"));//1
+  moodlers.add(loadImage("moodler_federi_D.png"));//2
+  moodlers.add(loadImage("moodler_federi_L.png"));//3
+  moodlers.add(loadImage("moodler_stit_D.png"));//4
+  moodlers.add(loadImage("moodler_stit_L.png"));//5
+  moodlers.add(loadImage("moodler_propela2_D.png"));//6
+  moodlers.add(loadImage("moodler_propela2_L.png"));//7
+  moodlers.add(loadImage("moodler_rip_D.png"));//8
+  moodlers.add(loadImage("moodler_rip_L.png"));//9
+  
+
 }
 
 void draw_background() {
@@ -78,7 +89,9 @@ void draw() {
         platform.update();
       }
       //update playera
-      p.update(platforms, broken_platforms, first_horiz_line); 
+      p.update(platforms, broken_platforms, first_horiz_line);
+      //update cudovista
+      HW.update();
       
       draw_background();
   
@@ -90,8 +103,12 @@ void draw() {
       for ( Broken_Platform broken_platform : broken_platforms ) {       
         broken_platform.display();
       }
+
+      //crtanje cudovista
+      HW.display();
       //crtanje playera
       p.display();  
+      
   
       add_remove_platforms();
       if (p.y > 800+25){
@@ -197,6 +214,10 @@ void reset(){
   p.x_velocity=0;
   p.y_velocity=0;
   p.score = 0;
+  p.state = State.REGULAR;
+  p.orientation = Orientation.RIGHT;
   
   first_horiz_line.value = 0;
+  
+  HW.y_pos=100;
 }

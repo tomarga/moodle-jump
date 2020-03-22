@@ -3,8 +3,10 @@ abstract class Platform {
   protected float x_pos, y_pos;
   protected float p_length;
   protected PImage slikapl, power;
+  //superpower moze biti "", "federi", "stit", "propela"
   protected String superpower;
-      
+  //visited je true ako je igrac ikad odskocio od nje
+  public boolean visited;
   
   public Platform( float x, float y, String spower ) {
     x_pos = x;
@@ -13,6 +15,8 @@ abstract class Platform {
     p_length = 75;  
     
     superpower = spower;
+    
+    visited = false;
       
     if ( superpower.equals( "" ) == false ){
       String string_slika = superpower + ".png";
@@ -25,7 +29,7 @@ abstract class Platform {
   public void display() {  
     
     //ako na platformi postoji supermoc
-    if ( superpower.equals( "" ) == false ) {     
+    if ( superpower.equals( "" ) == false && !visited ) {     
       image( power, x_pos, y_pos - power.height );
     }
       
