@@ -139,6 +139,10 @@ void draw() {
 //metak se ispaljuje nakon klika mišem
 void mousePressed() {  
   
+  //klik na start ne smije ispucati metak
+  if ( p.score == 0 ){
+    return;
+  }
   Bullet new_bullet = new Bullet( mouseX, mouseY );
   bullets.add( new_bullet );
   //Moodler je ljut kad puca
