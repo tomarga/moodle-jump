@@ -5,7 +5,7 @@ abstract class Platform {
   protected PImage slikapl, power;
   //superpower moze biti "", "federi", "stit", "propela"
   protected String superpower;
-  //visited je true ako je igrac ikad odskocio od nje
+  //visited je true ako je igrac ikad prešao preko platforme
   public boolean visited;
   
   public Platform( float x, float y, String spower ) {

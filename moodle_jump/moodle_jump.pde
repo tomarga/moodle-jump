@@ -11,6 +11,8 @@ Broken_Platform prva_slomljena;
 ArrayList<Platform> platforms;
 ArrayList<Broken_Platform> broken_platforms;
 ArrayList<PImage> moodlers;
+ArrayList<Bullet> bullets;
+PImage bullet_img;
 //razmak izmedu linija u pozadinskoj mrezi
 MyFloat first_horiz_line;
 int line_dist;
@@ -23,6 +25,10 @@ void setup() {
   
   p = new Player(135, 475, 0, 0, 100);
   platforms = new ArrayList<Platform>();
+  //inicijalizacija liste slomljenih platformi(prazna lista)
+  broken_platforms = new ArrayList<Broken_Platform>();
+  bullets = new ArrayList<Bullet>();
+  
   HW= new homework(150,100);
   reset(); //funkcija služi da resetira sve varijable nakon što igrač padne
   
@@ -37,7 +43,11 @@ void setup() {
   moodlers.add(loadImage("moodler_propela2_L.png"));//7
   moodlers.add(loadImage("moodler_rip_D.png"));//8
   moodlers.add(loadImage("moodler_rip_L.png"));//9
+  moodlers.add(loadImage("moodler_ljuti_D.png"));//10
+  moodlers.add(loadImage("moodler_ljuti_L.png"));//11 
   
+  bullet_img = loadImage( "metak.png" );
+  bullet_img.resize( bullet_img.width / 6, bullet_img.height / 6 );
 
 }
 
@@ -90,6 +100,10 @@ void draw() {
       }
       //update playera
       p.update(platforms, broken_platforms, first_horiz_line);
+      //update metaka
+      for ( Bullet bullet : bullets ) {
+        bullet.update();
+      }
       //update cudovista
       HW.update();
       
@@ -103,13 +117,17 @@ void draw() {
       for ( Broken_Platform broken_platform : broken_platforms ) {       
         broken_platform.display();
       }
-
+      //crtanje metaka
+      for ( Bullet bullet : bullets ) {
+        bullet.display();
+      }
       //crtanje cudovista
       HW.display();
       //crtanje playera
       p.display();  
       
-  
+      remove_bullets();
+      
       add_remove_platforms();
       if (p.y > 800+25){
       reset();
@@ -118,6 +136,31 @@ void draw() {
   }
 }
 
+//metak se ispaljuje nakon klika mišem
+void mousePressed() {  
+  
+  Bullet new_bullet = new Bullet( mouseX, mouseY );
+  bullets.add( new_bullet );
+  //Moodler je ljut kad puca
+  if ( p.state == State.REGULAR ){
+    p.state = State.ANGRY;
+  }  
+}
+
+void remove_bullets(){
+
+    for ( int i = 0; i < bullets.size(); i++ ) {
+    if ( bullets.get(i).get_x() + bullet_img.width < 0 || bullets.get(i).get_x() >= width ||
+      bullets.get(i).get_y() + bullet_img.height < 0 || bullets.get(i).get_y() >= height ) {
+        
+        bullets.remove( i );
+        //ako nema više metaka u zraku, Moodler se odljuti
+        if ( bullets.size() == 0 && p.state == State.ANGRY ){
+          p.state = State.REGULAR;
+        }
+    } 
+  }
+}
 void add_remove_platforms() {
   
   //brise platforme ako su 'izletile' iz prozora
@@ -152,8 +195,9 @@ void add_remove_platforms() {
   //sada crtamo ostale platforme
   int razmak = 800/( broj_pl - 1 );
   Platform new_platform;
+  
   //vjerojatnost da se supermoći nalaze na platformi
-  double P_federi = (double)3/400;
+  double P_federi = (double)5/400;
   //System.out.println( P_federi );
   double P_stit = (double)2/400;
   //System.out.println( P_stit );
@@ -193,9 +237,10 @@ void add_remove_platforms() {
     
     platforms.add(new_platform);
     zadnja = new_platform;
-  }  
-  
+  }   
 }
+
+
 
 //funkcija služi da resetira sve varijable nakon što igrač padne
 void reset(){
@@ -206,8 +251,7 @@ void reset(){
   zadnja = new Regular_Platform(100, 700, "");
   platforms.add(zadnja);
   
-  //inicijalizacija liste slomljenih platformi(prazna lista)
-  broken_platforms = new ArrayList<Broken_Platform>();
+
   
   p.x=80;
   p.y=475;
@@ -220,4 +264,5 @@ void reset(){
   first_horiz_line.value = 0;
   
   HW.y_pos=100;
+  
 }

@@ -1,9 +1,7 @@
 //ovdje ću implementirati domaće zadaće, seminare i ostale more
 
-
 float HW_initial_size=60;
 String HW_default_image_name="dz.png";
-
 
 class homework
 {
@@ -42,7 +40,9 @@ class homework
   {
     
     //ovaj dio već sigurno napamet znate
+    if ( health > 0 ) {
     image(HWImage, x_pos, y_pos, x_size, y_size);
+    }
     
   }
   
@@ -50,20 +50,32 @@ class homework
   {
     //zadaća će biti jako malo, samo jedna će se pokazivati istovremeno
     //umjesto polja s zadaćama, koristit ćemo samo jednu zadaću i reciklirati je dok umre
-    if(health<=0)
+    
+    //ovo mozda treba staviti vani
+    //provjera je li zadaću pogodio metak
+    for ( Bullet bullet : bullets ){
+      if ( rect_intersect( x_pos, y_pos, x_pos + x_size, y_pos + y_size, 
+        bullet.x_pos, bullet.y_pos, bullet.x_pos + bullet_img.width, bullet.y_pos + bullet_img.height ) > 0 ) {   
+
+        health --;
+        bullet.bingo = true;
+      }
+    }
+    
+    if(health == 0)
     {
       health=1;
       y_pos=-100;
       x_pos=random(400);
     }
-    
+
     if(y_pos>=height)
     {
-      health=-1;
+      health=0;
     }
+            
   }
   
-
 }
 
 
@@ -81,7 +93,7 @@ float rect_intersect(float x11, float y11, float x12, float y12, float x21, floa
   float x2=min(x12,x22);
   float y2=min(y12,y22);
   
-  print((x2-x1)*(y2-y1));
+  //print((x2-x1)*(y2-y1));
   
   
   if(x2==x1 || y1==y2)
