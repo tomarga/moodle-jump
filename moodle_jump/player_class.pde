@@ -97,11 +97,11 @@ class Player {
     
     public void move() {
       
-      if (keyPressed && ( keyCode == LEFT || key == 'a' ) ) {
+      if (keyPressed && ( keyCode == LEFT || key == 'a' || key == 'A' ) ) {
         this.x -= 10;
         orientation = Orientation.LEFT;
       }
-      else if (keyPressed && ( keyCode == RIGHT || key == 'd' ) )  {
+      else if (keyPressed && ( keyCode == RIGHT || key == 'd' || key == 'D' ) )  {
         this.x += 10;
         orientation = Orientation.RIGHT;
       }
@@ -211,9 +211,6 @@ class Player {
         if(rect_intersect(HW.x_pos, HW.y_pos, HW.x_pos+HW.x_size, HW.y_pos+HW.y_size, x,y,x+size,y+size)>0)
         {
           state = State.RIP;
-          //u slucaju da player ima supermoc s federima,
-          //vraca se pocetna vrijednost gravitacije radi restarta
-          gravity = 2;
         }
       }
       

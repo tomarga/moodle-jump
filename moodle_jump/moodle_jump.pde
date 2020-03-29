@@ -24,10 +24,6 @@ void setup() {
   line_dist = 25;
   
   p = new Player(135, 475, 0, 0, 100);
-  platforms = new ArrayList<Platform>();
-  //inicijalizacija liste slomljenih platformi(prazna lista)
-  broken_platforms = new ArrayList<Broken_Platform>();
-  bullets = new ArrayList<Bullet>();
   
   HW= new homework(150,100);
   reset(); //funkcija služi da resetira sve varijable nakon što igrač padne
@@ -139,8 +135,8 @@ void draw() {
 //metak se ispaljuje nakon klika mišem
 void mousePressed() {  
   
-  //klik na start ne smije ispucati metak
-  if ( p.score == 0 ){
+  //klik na start ili ako je igrač mrtav ne smije ispucati metak
+  if ( state != 1  || p.state == State.RIP ){
     return;
   }
   Bullet new_bullet = new Bullet( mouseX, mouseY );
@@ -248,20 +244,30 @@ void add_remove_platforms() {
 
 //funkcija služi da resetira sve varijable nakon što igrač padne
 void reset(){
-  for (int i = platforms.size() - 1; i >= 0; i--) {
-    platforms.remove(i);
-  }
+  
+ // for (int i = platforms.size() - 1; i >= 0; i--) {
+   // platforms.remove(i);
+ // }
+ 
+ //inicijalizacija liste platformi
+  platforms = new ArrayList<Platform>();
+  
   //pocetna platforma
   zadnja = new Regular_Platform(100, 700, "");
   platforms.add(zadnja);
   
-
+  //inicijalizacija liste metaka
+  bullets = new ArrayList<Bullet>();
+  
+  //inicijalizacija liste slomljenih platformi(prazna lista)
+  broken_platforms = new ArrayList<Broken_Platform>();
   
   p.x=80;
   p.y=475;
   p.x_velocity=0;
   p.y_velocity=0;
   p.score = 0;
+  p.gravity = 2;
   p.state = State.REGULAR;
   p.orientation = Orientation.RIGHT;
   

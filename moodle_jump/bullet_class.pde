@@ -16,7 +16,7 @@ class Bullet {
     
     //metak se ispaljuje od pozicije playera
     x_pos = p.get_x() + 25;
-    y_pos = p.get_y() - 25;
+    y_pos = p.get_y() + 25;
     
     float x_dist = ( x_click - x_pos );
     float y_dist = ( y_click - y_pos );
@@ -43,13 +43,14 @@ class Bullet {
   
   public void display() {
     
+      //ovdje koristimo pushMatrix i popMatrix jer želimo samo micati samo metke,a ostale stvari se ne miču
       pushMatrix();
       translate( x_pos + bullet_img.width / 2, y_pos + bullet_img.height / 2 );
       if ( direction == Direction.RIGHT ){
-        rotate( 90 + angle );
+        rotate(radians( 90) + angle );
       }
       else {
-        rotate( -( 90 - angle ) );
+        rotate( -( radians(90) - angle ) );
       }
       image( bullet_img, 0, 0 );
       popMatrix();
