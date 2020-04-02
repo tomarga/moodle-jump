@@ -1,5 +1,6 @@
 //ovdje ću implementirati domaće zadaće, seminare i ostale more
 
+
 float HW_initial_size=60;
 String HW_default_image_name="dz.png";
 
@@ -12,10 +13,11 @@ class homework
   
   PImage HWImage;
   int health; //ovo se smanji kad ga pogodimo
-  
+  int i = 0;
   //možda će se zadaća i micati?
   float x_velocity, y_velocity;
   //ili ne?
+  private Direction direction=Direction.LEFT;
   
   
   public homework(float x, float y)
@@ -40,7 +42,24 @@ class homework
   {
     
     //ovaj dio već sigurno napamet znate
+    //zadaća titra lijevo desno
     if ( health > 0 ) {
+      if(direction == Direction.LEFT){
+          x_pos+=4;
+          i++;
+          if(i==5){ 
+          direction=Direction.RIGHT;
+          i=0;
+          }
+        }
+       else {
+         x_pos-=4;
+         i++;
+         if(i==5){
+           direction=Direction.LEFT;
+           i=0;
+         }
+       }
     image(HWImage, x_pos, y_pos, x_size, y_size);
     }
     

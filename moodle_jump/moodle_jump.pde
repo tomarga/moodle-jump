@@ -2,9 +2,10 @@ import java.util.ArrayList;
 int state=0;
 final int MAIN_MENU=0;
 final int GAME=1;
+final int HIGHSCORES=2;
 
 homework HW;
-
+IntList highscores;
 Player p;
 Platform zadnja;
 Broken_Platform prva_slomljena;
@@ -22,6 +23,7 @@ void setup() {
   
   first_horiz_line = new MyFloat();
   line_dist = 25;
+  highscores = new IntList(0,0,0,0,0,0);
   
   p = new Player(135, 475, 0, 0, 100);
   
@@ -75,15 +77,47 @@ void draw() {
       textSize(50);
       fill(27);
       text("   oodle Jump", 100, 200);
-      rect(140,380,200,100);
+      textSize(25);
+      fill(255,0,255);
+      text("A or LEFT for left   D or RIGHT for right", 20, 250);
+      text("LCLICK for shoot", 140, 300);
+      fill(27);
+      rect(120,350,240,100);
+      rect(120,550,240,100);
       fill(255);
       textSize(35);
-      text("START",187, 445);
-      image(moodlers.get(0),90,145,70,70);
+      text("START",187, 415);
+      text("HIGHSCORES",130, 615);
+      image(moodlers.get(0), 90, 145, 70, 70);
+      image(loadImage("dz.png"), 220, 470, 60, 60);
+    
       
-      if(mouseX > 140 && mouseX < 140+200 && mouseY > 380 && mouseY < 380+100 && mousePressed)
+      if(mouseX > 120 && mouseX < 120+240 && mouseY > 350 && mouseY < 350+100 && mousePressed)
         state=1;
+        
+       if(mouseX > 120 && mouseX < 120+240 && mouseY > 550 && mouseY < 550+100 && mousePressed)
+        state=2;
        break;
+       
+    case HIGHSCORES:
+    
+        background(225);
+        draw_background();
+        fill(27);
+        rect(120,75,240,100);
+        textSize(40);
+        fill(255);
+        text("BACK", 190, 140);
+        textSize(40);
+        fill(27);
+        fill(0, 0, 255);
+        for(int i = 0; i < 5; i++)
+          text((i+1)+".    "+str(highscores.get(i)), 100, 200+(i+1)*100);
+        if(mouseX > 120 && mouseX < 120+240 && mouseY > 75 && mouseY < 75+100 && mousePressed)
+          state=0;
+        
+        break;
+        
         
     case GAME:
   
@@ -126,6 +160,10 @@ void draw() {
       
       add_remove_platforms();
       if (p.y > 800+25){
+        //ako je igrač napravio bolji rekord(top 5) dodaj na listu
+        if(highscores.get(5)<p.score){
+          highscores.add(5,p.score);
+          highscores.sortReverse();  }
       reset();
         state=0;}
       break;
