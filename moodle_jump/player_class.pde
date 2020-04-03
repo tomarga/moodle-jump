@@ -208,7 +208,7 @@ class Player {
       //i sad na kraju provjeravamo koliziju sa zadaćom
       //ako igrac ima stit ili smo ubili cudoviste, nista se ne dogada
       if( state != State.SHIELD && HW.health >= 0 ) {
-        if(rect_intersect(HW.x_pos, HW.y_pos, HW.x_pos+HW.x_size, HW.y_pos+HW.y_size, x,y,x+size,y+size)>0)
+        if(rect_intersect(HW.x_pos, HW.y_pos, HW.x_pos+HW.get_size_x(), HW.y_pos+HW.get_size_y(), x,y,x+size,y+size)>0)
         {
           state = State.RIP;
         }

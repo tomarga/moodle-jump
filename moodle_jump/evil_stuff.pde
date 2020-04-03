@@ -3,15 +3,17 @@
 
 float HW_initial_size=60;
 String HW_default_image_name="dz.png";
+String SEM_default_image_name="seminar.png";
 
 class homework
 {
+  int type;
   //domaća zadaća
   //ima položaj i veličinu (kao i platforma)
   float x_pos, y_pos;
-  float x_size, y_size;
+  float x_size[]={0,0}, y_size[]={0,0};
   
-  PImage HWImage;
+  PImage HWImage[]={null, null};
   int health; //ovo se smanji kad ga pogodimo
   int i = 0;
   //možda će se zadaća i micati?
@@ -25,15 +27,21 @@ class homework
     x_pos=x;
     y_pos=y;
     
-    x_size=HW_initial_size;
-    y_size=x_size;//*HWImage.height/HWImage.width;
-    HWImage=loadImage(HW_default_image_name);
+    
+    HWImage[0]=loadImage(HW_default_image_name);
+    HWImage[1]=loadImage(SEM_default_image_name);
     //ovo smo vani definirali za slučaj kada bi trebali to ponovo koristiti
+    x_size[0]=HW_initial_size;
+    y_size[1]=HW_initial_size;
+    y_size[0]=x_size[0]*HWImage[0].height/HWImage[0].width;
+    x_size[1]=y_size[1]*HWImage[1].width/HWImage[1].height;
+    
     
     x_velocity=0;
     y_velocity=0;
     //s ovim ćemo se kasnije zabavljati
     
+    type=0;
     health=1;
     //ovo smo isto mogli (ili trebali) vani definirati;
   }
@@ -60,7 +68,7 @@ class homework
            i=0;
          }
        }
-    image(HWImage, x_pos, y_pos, x_size, y_size);
+    image(HWImage[type], x_pos, y_pos, x_size[type], y_size[type]);
     }
     
   }
@@ -73,7 +81,7 @@ class homework
     //ovo mozda treba staviti vani
     //provjera je li zadaću pogodio metak
     for ( Bullet bullet : bullets ){
-      if ( rect_intersect( x_pos, y_pos, x_pos + x_size, y_pos + y_size, 
+      if ( rect_intersect( x_pos, y_pos, x_pos + x_size[type], y_pos + y_size[type], 
         bullet.x_pos, bullet.y_pos, bullet.x_pos + bullet_img.width, bullet.y_pos + bullet_img.height ) > 0 ) {   
 
         health --;
@@ -83,9 +91,13 @@ class homework
     
     if(health == 0)
     {
-      health=1;
-      y_pos=-100;
-      x_pos=random(400);
+      float rnd=random(12);
+      
+      type=int(rnd)/9;
+      
+      makeHW(type);
+      
+      
     }
 
     if(y_pos>=height)
@@ -93,6 +105,46 @@ class homework
       health=0;
     }
             
+  }
+  
+  
+  //t=0 make a homework, t=1 make a seminar
+  private void makeHW(int t)
+  {
+    type=t;
+    
+    switch(t){
+      case 0 :
+        x_pos=random(400);
+        y_pos=-1*random(600)-400;
+        
+        
+        health=1;
+        
+      break;
+      case 1:
+        x_pos=random(400);
+        y_pos=-1*random(1000);
+        
+        health=2;
+        
+      break;
+    }
+  }
+  
+  
+  public float get_size_x()
+  {
+    return x_size[type];
+  }
+  public float get_size_y()
+  {
+    return y_size[type];
+  }
+  
+  public void rest()
+  {
+    makeHW(0);
   }
   
 }
