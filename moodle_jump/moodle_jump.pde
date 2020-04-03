@@ -1,8 +1,16 @@
 import java.util.ArrayList;
+import processing.sound.*;
 int state=0;
 final int MAIN_MENU=0;
 final int GAME=1;
 final int HIGHSCORES=2;
+final int GAME_OVER=3;
+
+//glazba
+SoundFile Gauda,Rainbows;
+String audioName1 = "data\\Rainbows.mp3";
+String audioName2 = "data\\Gauda.mp3";
+String path1,path2;
 
 homework HW;
 IntList highscores;
@@ -17,9 +25,15 @@ PImage bullet_img;
 //razmak izmedu linija u pozadinskoj mrezi
 MyFloat first_horiz_line;
 int line_dist;
+int score=0;
 
 void setup() {
   size(500, 800);
+  path1 = sketchPath(audioName1);
+  Rainbows = new SoundFile(this,path1);
+  path2 = sketchPath(audioName2);
+  Gauda = new SoundFile(this,path2);
+  Rainbows.loop();
   
   first_horiz_line = new MyFloat();
   line_dist = 25;
@@ -70,32 +84,36 @@ void draw_background() {
 void draw() {
 
   switch(state) {
-  
+    
     case MAIN_MENU:
+    
       background(225);
       draw_background();
-      textSize(50);
+      textAlign(CENTER);
+      textSize(70);
       fill(27);
-      text("   oodle Jump", 100, 200);
+      text("   oodle Jump", width/2, 175);
       textSize(25);
-      fill(255,0,255);
-      text("A or LEFT for left   D or RIGHT for right", 20, 250);
-      text("LCLICK for shoot", 140, 300);
+      fill(255, 100, 0);
+      text("A or LEFT for left   D or RIGHT for right", width/2, 250);
+      text("LCLICK for shoot", width/2, 300);
       fill(27);
-      rect(120,350,240,100);
-      rect(120,550,240,100);
+      rect(125,350,250,100);
+      rect(125,550,250,100);
       fill(255);
       textSize(35);
-      text("START",187, 415);
-      text("HIGHSCORES",130, 615);
-      image(moodlers.get(0), 90, 145, 70, 70);
+      text("START",width/2, 415);
+      text("HIGHSCORES",width/2, 615);
+      image(moodlers.get(0), 20, 111, 80, 80);
       image(loadImage("dz.png"), 220, 470, 60, 60);
     
-      
-      if(mouseX > 120 && mouseX < 120+240 && mouseY > 350 && mouseY < 350+100 && mousePressed)
+      if(mouseX > 125 && mouseX < 125+250 && mouseY > 350 && mouseY < 350+100 && mousePressed){
         state=1;
-        
-       if(mouseX > 120 && mouseX < 120+240 && mouseY > 550 && mouseY < 550+100 && mousePressed)
+        //nisam stavio Gauda.loop() jer iz nekog razloga prve 2.5 sekunde je tišina,pokušao sam trimati no i dalje isti problem
+        Rainbows.stop();
+        Gauda.jump(2.5);
+      }
+      if(mouseX > 125 && mouseX < 125+250 && mouseY > 550 && mouseY < 550+100 && mousePressed)
         state=2;
        break;
        
@@ -104,26 +122,29 @@ void draw() {
         background(225);
         draw_background();
         fill(27);
-        rect(120,75,240,100);
+        rect(125,75,250,100);
         textSize(40);
         fill(255);
-        text("BACK", 190, 140);
+        textAlign(CENTER);
+        text("BACK", width/2, 140);
         textSize(40);
         fill(27);
         fill(0, 0, 255);
-        for(int i = 0; i < 5; i++)
-          text((i+1)+".    "+str(highscores.get(i)), 100, 200+(i+1)*100);
-        if(mouseX > 120 && mouseX < 120+240 && mouseY > 75 && mouseY < 75+100 && mousePressed)
+        for(int i = 0; i < 5; i++){
+          textAlign(LEFT);
+          text((i+1)+".    "+str(highscores.get(i)), 50, 200+(i+1)*100);
+        }
+        if(mouseX > 125 && mouseX < 125+250 && mouseY > 75 && mouseY < 75+100 && mousePressed)
           state=0;
         
         break;
         
         
     case GAME:
-  
+      if(Gauda.isPlaying() == false)
+        Gauda.jump(2.5);
       frameRate(40);
       background(225);
-      text("Score: "+str(p.score), 20, 40);
       //update svih platformi
       for ( Platform platform : platforms ) {       
         platform.update();
@@ -157,16 +178,61 @@ void draw() {
       p.display();  
       
       remove_bullets();
+      text("Score: "+str(p.score), 100, 40);
       
       add_remove_platforms();
       if (p.y > 800+25){
+        score = p.score;
         //ako je igrač napravio bolji rekord(top 5) dodaj na listu
-        if(highscores.get(5)<p.score){
-          highscores.add(5,p.score);
+        if(highscores.get(5)<score){
+          highscores.add(5,score);
           highscores.sortReverse();  }
-      reset();
-        state=0;}
+        state=3;
+        reset();  
+      }
       break;
+      
+      case GAME_OVER:
+        
+        background(225);
+        draw_background();
+        textSize(60);
+        fill(255,0,0);
+        text("GAME OVER :(", width/2, 150);
+        if(score > highscores.get(1)){
+        textSize(50);
+        fill(255,100,0);
+        text("NEW RECORD!", width/2,300);
+        }
+        else {
+        textSize(45);
+        fill(255,100,0);
+        text("SCORE", width/2, 300);
+        }
+        textSize(80);
+        fill(255,100,0);
+        text(score, width/2, 425);
+        fill(27);
+        rect(125,650,250,100);
+        textSize(40);
+        fill(255);
+        text("BACK", width/2, 715);
+        fill(27);
+        rect(125,500,250,100);
+        textSize(40);
+        fill(255);
+        text("RESTART", width/2, 565);
+        if(mouseX > 125 && mouseX < 125+250 && mouseY > 650 && mouseY < 650+100 && mousePressed){
+          state=0; 
+          Gauda.stop();
+          Rainbows.loop();
+        }
+        if(mouseX > 125 && mouseX < 125+250 && mouseY > 500 && mouseY < 500+100 && mousePressed){
+          state=1;
+          Gauda.jump(2.5);
+        }
+        break;
+          
   }
 }
 
