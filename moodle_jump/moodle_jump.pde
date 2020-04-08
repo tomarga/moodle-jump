@@ -8,8 +8,8 @@ final int GAME_OVER=3;
 
 //glazba
 SoundFile Gauda,Rainbows;
-String audioName1 = "data\\Rainbows.mp3";
-String audioName2 = "data\\Gauda.mp3";
+String audioName1 = "data/Rainbows.mp3";
+String audioName2 = "data/Gauda.mp3";
 String path1,path2;
 
 homework HW;

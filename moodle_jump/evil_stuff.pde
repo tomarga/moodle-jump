@@ -1,5 +1,102 @@
 //ovdje ću implementirati domaće zadaće, seminare i ostale more
 
+float Pi=3.141592653589793;
+
+//klasa put u R^2, kao u intrafu
+//klasa sama pamti (i inkrementira) parametar t
+abstract class path2
+{
+  protected int t;
+  protected int tmax;
+  
+  protected float x,y;
+  
+  
+  public abstract int tset(int tt);
+  public abstract int tnext();
+  public abstract int trest();
+  
+  public float getx(){return x;}
+  public float gety(){return y;}
+  
+}
+
+class path2linear extends path2
+{
+  private float a, b;
+  
+  public int trest()
+  {
+    t=0; x=0; y=0;
+    return 0;
+  }
+  public int tset(int tt)
+  {
+    if (tt>=tmax)
+    {
+      t=-tmax;
+    }
+    else t=tt;
+    
+    x=(tmax-abs(t))*a;
+    y=(tmax-abs(t))*b;
+    
+    return t;
+  }
+  
+  public int tnext()
+  {
+    t++;
+    return tset(t);
+  }
+  
+  public path2linear(float aa, float bb, int N)
+  {
+    a=aa/N; b=bb/N;
+    tmax=N;
+  }
+  
+}
+
+class path2ellipse extends path2
+{
+  private float Ax, Ay, fx, fy;
+  
+  
+  public int trest()
+  {
+    t=0; x=0; y=0;
+    return 0;
+  }
+  public int tset(int tt)
+  {
+    t=tt%tmax;
+    
+    x=Ax*cos(fx*t);
+    y=Ay*sin(fy*t);
+    
+    return t;
+  }
+  
+  public int tnext()
+  {
+    t++;
+    return tset(t);
+  }
+  
+  public path2ellipse(float H, float V, int N, int xr, int yr)
+  {
+    Ax=H; Ay=V;
+    tmax=N;
+    
+    fx=2*Pi*xr/N;
+    fy=2*Pi*yr/N;
+    
+    trest();
+  }
+}
+
+
 
 float HW_initial_size=60;
 String HW_default_image_name="dz.png";
@@ -18,6 +115,7 @@ class homework
   int i = 0;
   //možda će se zadaća i micati?
   float x_velocity, y_velocity;
+  path2 HWpath[];
   //ili ne?
   private Direction direction=Direction.LEFT;
   
@@ -40,6 +138,9 @@ class homework
     x_velocity=0;
     y_velocity=0;
     //s ovim ćemo se kasnije zabavljati
+    HWpath= new path2[2];
+    HWpath[0]= new path2ellipse(10, 5, 20, 1, -2);
+    HWpath[1]= new path2ellipse(0, 10, 60, 0, 1);
     
     type=0;
     health=1;
@@ -51,7 +152,12 @@ class homework
     
     //ovaj dio već sigurno napamet znate
     //zadaća titra lijevo desno
+    
+    
+    
     if ( health > 0 ) {
+      /*
+      Ovo sve Margaritino ću zakomentirati
       if(direction == Direction.LEFT){
           x_pos+=4;
           i++;
@@ -68,7 +174,11 @@ class homework
            i=0;
          }
        }
-    image(HWImage[type], x_pos, y_pos, x_size[type], y_size[type]);
+    jer sam tako zao i podmukao
+    */
+    image(HWImage[type], x_pos+HWpath[type].getx(), y_pos+HWpath[type].gety(), x_size[type], y_size[type]);
+
+    /*a to ću sve nadoknaditi u updateu*/
     }
     
   }
@@ -104,6 +214,8 @@ class homework
     {
       health=0;
     }
+    
+    HWpath[type].tnext();
             
   }
   
