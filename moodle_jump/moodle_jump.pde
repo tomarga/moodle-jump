@@ -7,10 +7,16 @@ final int HIGHSCORES=2;
 final int GAME_OVER=3;
 
 //glazba
-SoundFile Gauda,Rainbows;
+SoundFile Gauda,Rainbows, Gameover, Fall;
 String audioName1 = "data/Rainbows.mp3";
 String audioName2 = "data/Gauda.mp3";
-String path1,path2;
+String audioName3 = "MoodleJump_gameover.mp3";
+String audioName4 = "Moodle_Fall.mp3";
+String path1,path2, path3;
+
+//Neke varijable koje su mi trebale za gameover screen(MK)
+int GOTime;
+int GOFall;
 
 homework HW;
 IntList highscores;
@@ -33,6 +39,8 @@ void setup() {
   Rainbows = new SoundFile(this,path1);
   path2 = sketchPath(audioName2);
   Gauda = new SoundFile(this,path2);
+  Gameover = new SoundFile(this, audioName3);
+  Fall = new SoundFile(this, audioName4);
   Rainbows.loop();
   
   first_horiz_line = new MyFloat();
@@ -141,7 +149,7 @@ void draw() {
         
         
     case GAME:
-      if(Gauda.isPlaying() == false)
+      if(Gauda.isPlaying() == false && p.state != State.RIP)
         Gauda.jump(2.5);
       frameRate(40);
       background(225);
@@ -188,12 +196,20 @@ void draw() {
           highscores.add(5,score);
           highscores.sortReverse();  }
         state=3;
-        reset();  
+        Gauda.stop();
+        
+        
+        if(GOFall==0)
+        {
+          GOFall=1;
+          Fall.play();
+        }
+        
+        reset();
       }
       break;
       
-      case GAME_OVER:
-        
+      case GAME_OVER:       
         background(225);
         draw_background();
         textSize(60);
@@ -225,13 +241,35 @@ void draw() {
         if(mouseX > 125 && mouseX < 125+250 && mouseY > 650 && mouseY < 650+100 && mousePressed){
           state=0; 
           Gauda.stop();
+          Gameover.stop();
           Rainbows.loop();
         }
         if(mouseX > 125 && mouseX < 125+250 && mouseY > 500 && mouseY < 500+100 && mousePressed){
           state=1;
+          Gameover.stop();
           Gauda.jump(2.5);
         }
+        
+        if(GOFall==0)
+        {
+          GOFall=1;
+          Fall.play();
+          GOTime-=0.8*frameRate;
+        }
+        
+        if(GOFall==1)
+        {
+          GOTime++;
+          
+          if(GOTime>0.8*frameRate)
+          {
+            GOFall=2;
+            Gameover.play();
+          }
+        }
+        
         break;
+        
           
   }
 }
@@ -378,5 +416,13 @@ void reset(){
   first_horiz_line.value = 0;
   
   HW.y_pos=100;
+  //šta je sad ovo?
+  //umjesto toga
+  HW.rest();
+  
+  
+  GOTime=0;
+  if(GOFall!=1)
+  {GOFall=0;}
   
 }

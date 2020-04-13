@@ -210,7 +210,11 @@ class Player {
       if( state != State.SHIELD && HW.health >= 0 ) {
         if(rect_intersect(HW.x_pos, HW.y_pos, HW.x_pos+HW.get_size_x(), HW.y_pos+HW.get_size_y(), x,y,x+size,y+size)>0)
         {
+          
           state = State.RIP;
+          Gauda.stop();
+          Fall.play();
+          GOFall=1;
         }
       }
       
